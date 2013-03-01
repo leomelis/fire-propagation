@@ -6,8 +6,11 @@
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://code.jquery.com/jquery-migrate-1.1.1.min.js"></script>
     <script type="text/javascript" src="raphael-min.js"></script>
-    <script>
+    
+    <!-- Fix rendering issue -->
+    <style> svg {shape-rendering: crispEdges; } </style>
 
+    <script>
         function create_grid(paper, width, height, spacing){
             for(var i=0; i<height+spacing; i=i+spacing){
                 paper.path("M0," + i + "L"+width+"," + i);
@@ -20,7 +23,7 @@
         $(document).ready(function(){
             // Creates canvas 320 × 200 at 10, 50
             var paper = Raphael(10, 50, 320, 200);
-            
+
             create_grid(paper, 320, 200, 10);
 
             // Creates circle at x = 50, y = 40, with radius 10
