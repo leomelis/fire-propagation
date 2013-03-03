@@ -11,28 +11,38 @@
     <style> svg {shape-rendering: crispEdges; } </style>
 
     <script>
-        function create_grid(paper, width, height, spacing){
-            for(var i=0; i<height+spacing; i=i+spacing){
-                paper.path("M0," + i + "L"+width+"," + i);
+        var paper_width = 320;
+        var paper_height = 200;
+        var dim = 10;
+
+        var colors = {
+            "fire":"red",
+            "firewall":"black",
+            "tree":"yellow",
+            "pine":"green"
+        }
+
+        function create_grid(paper, paper_width, paper_height, dim){
+            for(var i=0; i<paper_height+dim; i=i+dim){
+                paper.path("M0," + i + "L"+paper_width+"," + i);
             }
 
-            for(var i=0; i<width+spacing; i=i+spacing){
-                paper.path("M"+i+",0L"+i+","+height);
+            for(var i=0; i<paper_width+dim; i=i+dim){
+                paper.path("M"+i+",0L"+i+","+paper_height);
             }
         }
+
+        function create_square(paper, x, y, dim, type){
+            var c = paper.rect(x, y, dim, dim, type);
+            c.attr("fill", colors[type]);
+        }
+
         $(document).ready(function(){
-            // Creates canvas 320 × 200 at 10, 50
-            var paper = Raphael(10, 50, 320, 200);
+            var paper = Raphael(10, 50, paper_width, paper_height);
 
-            create_grid(paper, 320, 200, 10);
+            // create_grid(paper, paper_width, paper_height, 10);
 
-            // Creates circle at x = 50, y = 40, with radius 10
-            var circle = paper.circle(50, 40, 10);
-            // Sets the fill attribute of the circle to red (#f00)
-            circle.attr("fill", "#f00");
-
-            // Sets the stroke attribute of the circle to white
-            circle.attr("stroke", "#fff");
+            create_square(paper, 20, 10, dim, "fire");
         });
     </script>
 </head>
