@@ -140,7 +140,12 @@
         function setup_listeners(){
             $("#btn-next").click(function(){
                 next_turn();
-                propagate_fire(wind_strength, wind_direction, wind_amplitude);
+
+                ws = $("input[name='ws']").val();
+                wd = $("input[name='wd']").val();
+                wa = $("input[name='wa']").val();
+                propagate_fire(ws, wd, wa);
+
                 draw();
             });
         }
@@ -156,7 +161,23 @@
     </script>
 </head>
 <body>
-    <input id="btn-next" type="button" value="next"/>
+    <table>
+        <tr>
+            <td>Wind strength</td>
+            <td><input type="text" name="ws" value="5"><br/></td>
+        </tr>
+        <tr>
+            <td>Wind direction</td>
+            <td><input type="text" name="wd" value="0"></td>
+        </tr>
+        <tr>
+            <td>Wind amplitude</td>
+            <td><input type="text" name="wa" value="90"></td>
+        </tr>
+    </table>
+
+    <input id="btn-next" type="button" value="next"/><br/>
+
     <div id="notepad"></div>
 </body>
 </html>
