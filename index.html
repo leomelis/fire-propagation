@@ -135,6 +135,13 @@
         }
 
         function setup_listeners(){
+            $("#notepad").click(function(e){
+                x = Math.floor(e.offsetX/dim);
+                y = vertical_size - 1 - Math.floor(e.offsetY/dim);
+                set_state(x,y,"fire");
+                draw();
+            });
+
             $("#btn-next").click(function(){
                 next_turn();
 
@@ -154,8 +161,8 @@
         }
 
         $(document).ready(function(){
-            setup_listeners();
             paper = Raphael(document.getElementById("notepad"), paper_width, paper_height);
+            setup_listeners();
 
             initialize_grid();
             set_state(ox,oy,"fire");
@@ -164,6 +171,7 @@
     </script>
 </head>
 <body>
+    <div id="brush-red" style="background-color: red; width:20px; height:20px;"></div>
     <table>
         <tr>
             <td>Wind strength</td>
