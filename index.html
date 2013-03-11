@@ -13,16 +13,17 @@
     <script>
         var paper;
 
-        var horizontal_size = 100;
-        var vertical_size = 100;
-        var dim = 10;
+        var horizontal_size = 20;
+        var vertical_size = 20;
+        var dim = 20;
 
-        var ox = 10;
-        var oy = 50;
-        var wind_strength = 30;
+        var ox = 15;
+        var oy = 10;
+        var wind_strength = 5;
         var wind_direction = 0;
         var wind_amplitude = 90;
 
+        var grid = [];
 
         var paper_width  = horizontal_size*dim;
         var paper_height = vertical_size*dim;
@@ -30,22 +31,12 @@
         var colors = {
             "fire":"red",
             "firewall":"black",
-            "tree":"yellow",
+            "tree":"beige",
             "pine":"green"
         }
 
         function fix_y(y){
             return paper_height - y - dim;
-        }
-
-        function create_grid(paper_width, paper_height, dim){
-            for(var i=0; i<paper_height+dim; i=i+dim){
-                paper.path("M0," + i + "L"+paper_width+"," + i);
-            }
-
-            for(var i=0; i<paper_width+dim; i=i+dim){
-                paper.path("M"+i+",0L"+i+","+paper_height);
-            }
         }
 
         function create_square(x, y, type){
@@ -56,14 +47,26 @@
             c.attr("fill", colors[type]);
         }
 
-        function propagate_fire(x, y, v){
+        function propagate_fire(v,wd,wa){
+            for (var i=0; i<horizontal_size; i++) {
+                for (var j=0; j<vertical_size; j++) {
+                    types = grid[i][j];
+                    type = types[types.length - 2];
+
+                    if (type == "fire") {
+                        propagate_fire_origin(i,j,v,wd,wa);
+                    }
+                }
+            }
+        }
+        function propagate_fire_origin(x, y, v, wd, wa){
             for (i=-v; i<v+1; i++){
                 for(j=-v; j<v+1; j++){
                     x_ = x+i;
                     y_ = y+j;
 
-                    alpha = wind_direction;
-                    beta = wind_amplitude;
+                    alpha = wd;
+                    beta = wa;
                     alpha_lower = alpha - beta/2;
                     alpha_upper = alpha + beta/2;
 
@@ -78,16 +81,69 @@
                     inside_circle = Math.sqrt(i*i + j*j) <= v;
 
                     if (inside_wind && inside_circle){
-                        create_square(x+i, y+j,"fire");
+                        set_state(x+i, y+j,"fire");
                     }
                 }
             }
         }
 
+        function initialize_grid(){
+            for (var i=0; i<horizontal_size; i++) {
+                grid[i] = [];
+                for (var j=0; j<vertical_size; j++) {
+                    grid[i][j] = ["tree"];
+                }
+            }
+        }
+
+        function draw(){
+            for (var i=0; i<horizontal_size; i++) {
+                for (var j=0; j<vertical_size; j++) {
+                    types = grid[i][j];
+                    type = types[types.length - 1];
+                    create_square(i,j,type);
+                }
+            }
+        }
+
+        function next_turn(){
+            for (var i=0; i<horizontal_size; i++) {
+                for (var j=0; j<vertical_size; j++) {
+                    types = grid[i][j];
+                    type = types[types.length - 1];
+                    grid[i][j].push(type);
+                }
+            }
+        }
+
+        function get_state (x, y) {
+            types = grid[x][y];
+            type = types[types.length - 1];
+            return type;
+        }
+
+        function set_state (x, y, type) {
+            try {
+                grid[x][y];
+            }
+            catch (err) {
+                return
+            }
+
+            types = grid[x][y];
+            last = types.length -1;
+            grid[x][y][last] = type;
+        }
+
         $(document).ready(function(){
-            paper = Raphael(10, 50, paper_width, paper_height);
-            propagate_fire(ox, oy, wind_strength);
-            create_square(ox, oy, "firewall");
+            paper = Raphael(0, 0, paper_width, paper_height);
+            initialize_grid();
+            set_state(ox,oy,"fire");
+
+            next_turn();
+            propagate_fire(wind_strength, wind_direction, wind_amplitude);
+            draw();
+            // create_square(ox, oy, "firewall");
         });
     </script>
 </head>
