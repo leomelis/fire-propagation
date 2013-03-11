@@ -13,13 +13,13 @@
     <script>
         var paper;
 
-        var horizontal_size = 32;
-        var vertical_size = 20;
+        var horizontal_size = 100;
+        var vertical_size = 100;
         var dim = 10;
 
         var ox = 10;
-        var oy = 10;
-        var wind_strength = 5;
+        var oy = 50;
+        var wind_strength = 30;
         var wind_direction = 0;
         var wind_amplitude = 90;
 
@@ -69,9 +69,15 @@
 
                     gamma = Raphael.angle(x_, y_, x, y);
 
-                    if (((alpha_lower <= gamma) && (gamma <= alpha_upper))||
-                        ((alpha_lower+360 <= gamma) && (gamma <= alpha_upper+360))||
-                        ((alpha_lower-360 <= gamma) && (gamma <= alpha_upper-360))){
+                    // boolean
+                    inside_wind =   ((alpha_lower     <= gamma) && (gamma <= alpha_upper)) ||
+                                    ((alpha_lower+360 <= gamma) && (gamma <= alpha_upper+360)) ||
+                                    ((alpha_lower-360 <= gamma) && (gamma <= alpha_upper-360));
+
+                    // boolean
+                    inside_circle = Math.sqrt(i*i + j*j) <= v;
+
+                    if (inside_wind && inside_circle){
                         create_square(x+i, y+j,"fire");
                     }
                 }
