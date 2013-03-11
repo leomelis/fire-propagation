@@ -17,7 +17,7 @@
         var vertical_size = 20;
         var dim = 20;
 
-        var ox = 15;
+        var ox = 0;
         var oy = 10;
         var wind_strength = 5;
         var wind_direction = 0;
@@ -131,22 +131,32 @@
             }
 
             types = grid[x][y];
-            last = types.length -1;
-            grid[x][y][last] = type;
+            if (typeof(types) != "undefined") {
+                last = types.length -1;
+                grid[x][y][last] = type;
+            }
+        }
+
+        function setup_listeners(){
+            $("#btn-next").click(function(){
+                next_turn();
+                propagate_fire(wind_strength, wind_direction, wind_amplitude);
+                draw();
+            });
         }
 
         $(document).ready(function(){
-            paper = Raphael(0, 0, paper_width, paper_height);
+            setup_listeners();
+            paper = Raphael(document.getElementById("notepad"), paper_width, paper_height);
+
             initialize_grid();
             set_state(ox,oy,"fire");
-
-            next_turn();
-            propagate_fire(wind_strength, wind_direction, wind_amplitude);
             draw();
-            // create_square(ox, oy, "firewall");
         });
     </script>
 </head>
 <body>
+    <input id="btn-next" type="button" value="next"/>
+    <div id="notepad"></div>
 </body>
 </html>
