@@ -14,6 +14,11 @@
     <!-- Fix rendering issue -->
     <style> svg {shape-rendering: crispEdges; } </style>
 
+    <style>
+        svg {
+            cursor: crosshair;
+        }
+    </style>
     <script>
         var paper;
 
@@ -30,10 +35,10 @@
         var paper_height = vertical_size*dim;
 
         var colors = {
-            "fire":"red",
-            "firewall":"black",
-            "tree":"beige",
-            "pine":"green"
+            "feu":"red",
+            "pare-feu":"black",
+            "plaine":"beige",
+            "pin":"green"
         }
 
         function fix_y(y){
@@ -54,7 +59,7 @@
                     types = grid[i][j];
                     type = types[types.length - 2];
 
-                    if (type == "fire") {
+                    if (type == "feu") {
                         propagate_fire_origin(i,j,v,wd,wa);
                     }
                 }
@@ -82,7 +87,7 @@
                     inside_circle = Math.sqrt(i*i + j*j) <= v;
 
                     if (inside_wind && inside_circle){
-                        set_state(x+i, y+j,"fire");
+                        set_state(x+i, y+j,"feu");
                     }
                 }
             }
@@ -92,7 +97,7 @@
             for (var i=0; i<horizontal_size; i++) {
                 grid[i] = [];
                 for (var j=0; j<vertical_size; j++) {
-                    grid[i][j] = ["tree"];
+                    grid[i][j] = ["plaine"];
                 }
             }
         }
@@ -142,7 +147,9 @@
             $("#notepad").click(function(e){
                 x = Math.floor(e.offsetX/dim);
                 y = vertical_size - 1 - Math.floor(e.offsetY/dim);
-                set_state(x,y,"fire");
+
+                type = $("#selected-brush .active").text().toLowerCase();
+                set_state(x,y,type);
                 draw();
             });
 
@@ -169,30 +176,42 @@
             setup_listeners();
 
             initialize_grid();
-            set_state(ox,oy,"fire");
+            set_state(ox,oy,"feu");
             draw();
         });
     </script>
 </head>
-<body>
-    <div id="brush-red" style="background-color: red; width:20px; height:20px;"></div>
-    <table>
-        <tr>
-            <td>Wind strength</td>
-            <td><input type="text" name="ws" value="5"><br/></td>
-        </tr>
-        <tr>
-            <td>Wind direction</td>
-            <td><input type="text" name="wd" value="90"></td>
-        </tr>
-        <tr>
-            <td>Wind amplitude</td>
-            <td><input type="text" name="wa" value="0"></td>
-        </tr>
-    </table>
+<body style="margin-left:50px;">
+    <div class="row" style="margin-top: 50px;">
+        <div class="span12">
+            <table>
+                <tr>
+                    <td>Wind strength</td>
+                    <td><input type="text" name="ws" value="5"><br/></td>
+                </tr>
+                <tr>
+                    <td>Wind direction</td>
+                    <td><input type="text" name="wd" value="90"></td>
+                </tr>
+                <tr>
+                    <td>Wind amplitude</td>
+                    <td><input type="text" name="wa" value="0"></td>
+                </tr>
+            </table>
 
-    <input id="btn-next" type="button" value="next"/><br/>
+            <div id="selected-brush" class="btn-group" data-toggle="buttons-radio">
+                <button type="button" class="btn active">Feu</button>
+                <button type="button" class="btn">Plaine</button>
+                <button type="button" class="btn">Pin</button>
+                <button type="button" class="btn">Pare-feu</button>
+            </div>
 
-    <div id="notepad"></div>
+            <button id="btn-next" type="btn-next" class="btn btn-primary">Next</button>
+
+            <br/><br/>
+
+            <div id="notepad"></div>
+        </div>
+    </div>
 </body>
 </html>
