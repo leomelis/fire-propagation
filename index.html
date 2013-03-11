@@ -43,6 +43,50 @@
             "pin":"green"
         }
 
+        function path(ox, oy, tx, ty, final_path) {
+            if (typeof(ox) == "undefined" || typeof(oy) == "undefined") {
+                return [];
+            }
+
+            if (ox == tx && oy == ty) {
+                return final_path;
+            }
+
+            var dist_min;
+            var neigh_x;
+            var neigh_y;
+
+            var dist;
+            var curr_x;
+            var curr_y;
+
+            for (var i=-1; i<=1; i++){
+                for (var j=-1; j<=1; j++){
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+
+                    curr_x = ox + i;
+                    curr_y = oy + j;
+
+                    if (curr_x < 0 || curr_x > horizontal_size - 1 || curr_y < 0 || curr_y > vertical_size - 1) {
+                        continue;
+                    }
+
+                    dist = Math.pow(ty-curr_y,2)+Math.pow(tx-curr_x,2);
+
+                    if (typeof(dist_min) == "undefined" || dist < dist_min) {
+                        neigh_x = curr_x;
+                        neigh_y = curr_y;
+                        dist_min = dist;
+                    }
+                }
+            }
+            final_path.push([neigh_x,neigh_y]);
+
+            return path(neigh_x, neigh_y, tx, ty, final_path);
+        }
+
         function fix_y(y){
             return paper_height - y - dim;
         }
@@ -73,6 +117,10 @@
                     x_ = x+i;
                     y_ = y+j;
 
+                    if (x_ < 0 || x_ > horizontal_size - 1 || y_ < 0 || y_ > vertical_size - 1) {
+                        continue;
+                    }
+
                     alpha = wd;
                     beta = wa;
                     alpha_lower = alpha - beta/2;
@@ -88,11 +136,35 @@
                     // boolean
                     inside_circle = Math.sqrt(i*i + j*j) <= v;
 
-                    if (inside_wind && inside_circle){
+                    // boolean - pare-feu in path?
+                    has_pare_feu = pare_feu_in_path(x_, y_, x, y);
+
+                    if (!has_pare_feu && inside_wind && inside_circle){
                         set_state(x+i, y+j,"feu");
                     }
                 }
             }
+        }
+
+        function pare_feu_in_path(ox,oy,tx,ty){
+            if (get_state(ox,oy) == "pare-feu") {
+                return true;
+            }
+
+            var x;
+            var y;
+            var p = path(ox,oy,tx,ty,[]);
+            var p_types = [];
+
+            for (var i=0; i<p.length; i++) {
+                x = p[i][0];
+                y = p[i][1];
+                p_types.push(get_state(x,y));
+            }
+
+            has_pare_feu = $.inArray("pare-feu",p_types);
+
+            return has_pare_feu != -1;
         }
 
         function initialize_grid(){
@@ -125,9 +197,9 @@
             }
         }
 
-        function get_state (x, y) {
+        function get_state(x, y) {
             types = grid[x][y];
-            type = types[types.length - 1];
+            type = types[types.length - 2];
             return type;
         }
 
@@ -157,8 +229,6 @@
             });
 
             $("#btn-next").click(function(){
-                next_turn();
-
                 ws = $("input[name='ws']").val();
                 ws = parseInt(ws);
 
@@ -168,8 +238,8 @@
                 wa = $("input[name='wa']").val();
                 wa = parseInt(wa);
 
+                next_turn();
                 propagate_fire(ws, wd, wa);
-
                 draw();
             });
         }
