@@ -17,9 +17,12 @@
         var vertical_size = 20;
         var dim = 10;
 
-        var ox = 150;
-        var oy = 100;
-        var wind_strength = 4
+        var ox = 10;
+        var oy = 10;
+        var wind_strength = 5;
+        var wind_direction = 0;
+        var wind_amplitude = 90;
+
 
         var paper_width  = horizontal_size*dim;
         var paper_height = vertical_size*dim;
@@ -56,15 +59,29 @@
         function propagate_fire(x, y, v){
             for (i=-v; i<v+1; i++){
                 for(j=-v; j<v+1; j++){
-                    create_square(x+i, y+j,"fire");
+                    x_ = x+i;
+                    y_ = y+j;
+
+                    alpha = wind_direction;
+                    beta = wind_amplitude;
+                    alpha_lower = alpha - beta/2;
+                    alpha_upper = alpha + beta/2;
+
+                    gamma = Raphael.angle(x_, y_, x, y);
+
+                    if (((alpha_lower <= gamma) && (gamma <= alpha_upper))||
+                        ((alpha_lower+360 <= gamma) && (gamma <= alpha_upper+360))||
+                        ((alpha_lower-360 <= gamma) && (gamma <= alpha_upper-360))){
+                        create_square(x+i, y+j,"fire");
+                    }
                 }
             }
         }
 
         $(document).ready(function(){
             paper = Raphael(10, 50, paper_width, paper_height);
-            propagate_fire(10, 10, wind_strength);
-            create_square(10, 10, "firewall");
+            propagate_fire(ox, oy, wind_strength);
+            create_square(ox, oy, "firewall");
         });
     </script>
 </head>
