@@ -13,13 +13,16 @@
     <script>
         var paper;
 
-        var paper_width = 320;
-        var paper_height = 200;
+        var horizontal_size = 32;
+        var vertical_size = 20;
         var dim = 10;
+
         var ox = 150;
         var oy = 100;
         var wind_strength = 4
 
+        var paper_width  = horizontal_size*dim;
+        var paper_height = vertical_size*dim;
 
         var colors = {
             "fire":"red",
@@ -27,8 +30,6 @@
             "tree":"yellow",
             "pine":"green"
         }
-
-
 
         function fix_y(y){
             return paper_height - y - dim;
@@ -44,66 +45,26 @@
             }
         }
 
-        function create_square(x, y, dim, type){
-            y = fix_y(y);
+        function create_square(x, y, type){
+            x = x*dim;
+            y = fix_y(y*dim);
 
             var c = paper.rect(x, y, dim, dim);
             c.attr("fill", colors[type]);
         }
 
-        function cuadrado(x, y, dim, type){
-            for (i=-wind_strength*dim; i<wind_strength*dim+1; i=i+dim){
-                for(j=-wind_strength*dim; j<wind_strength*dim+1; j=j+dim){
-                    var c = paper.rect(x+j, y+i, dim, dim);
-                    c.attr("fill", colors[type]);
-
+        function propagate_fire(x, y, v){
+            for (i=-v; i<v+1; i++){
+                for(j=-v; j<v+1; j++){
+                    create_square(x+i, y+j,"fire");
                 }
             }
         }
 
-        // function propagate_fire(x, y, wind_strength, wind_direction){
-        //     wind_direction = wind_direction*Math.PI/180;
-
-        //     for(var i=0; i<wind_strength+1; i=i+1){
-        //         nx = x+i*dim;
-        //         nx_ = nx + dim/2;
-        //         ny_ = Math.floor(Math.tan(wind_direction)*nx_/dim)*dim + y;
-
-        //         create_square(nx, ny_, dim, "fire");
-        //     }
-        // }
-
-
-
         $(document).ready(function(){
             paper = Raphael(10, 50, paper_width, paper_height);
-
-            // create_grid(paper_width, paper_height, 10);
-
-            cuadrado(ox, oy, dim, "fire");
-            create_square(ox, oy, dim, "firewall");
-            // for (var i=wind_strength; i<wind_strength+1; i++){
-            //     for(var j=wind_strength; j<wind_strength+1; j++){
-            //         var c = paper.rect(x+i, y+i, dim, dim);
-            //         c.attr("fill", colors[type])
-
-            //     }
-            // }
-
-
-
-
-            // propagate_fire(10, 100, 20, 45);
-
-            // create_square(x+0*dim, y, dim, "fire");
-            // create_square(x+1+dim, y, dim, "fire");
-            // create_square(x+2*dim, y, dim, "fire");
-            // create_square(x+3*dim, y, dim, "fire");
-            // create_square(x+4*dim, y, dim, "fire");
-
-
-
-
+            propagate_fire(10, 10, wind_strength);
+            create_square(10, 10, "firewall");
         });
     </script>
 </head>
