@@ -19,9 +19,6 @@
 
         var ox = 0;
         var oy = 10;
-        var wind_strength = 5;
-        var wind_direction = 0;
-        var wind_amplitude = 90;
 
         var grid = [];
 
@@ -142,8 +139,14 @@
                 next_turn();
 
                 ws = $("input[name='ws']").val();
+                ws = parseInt(ws);
+
                 wd = $("input[name='wd']").val();
+                wd = parseInt(wd);
+
                 wa = $("input[name='wa']").val();
+                wa = parseInt(wa);
+
                 propagate_fire(ws, wd, wa);
 
                 draw();
@@ -168,11 +171,11 @@
         </tr>
         <tr>
             <td>Wind direction</td>
-            <td><input type="text" name="wd" value="0"></td>
+            <td><input type="text" name="wd" value="90"></td>
         </tr>
         <tr>
             <td>Wind amplitude</td>
-            <td><input type="text" name="wa" value="90"></td>
+            <td><input type="text" name="wa" value="0"></td>
         </tr>
     </table>
 
